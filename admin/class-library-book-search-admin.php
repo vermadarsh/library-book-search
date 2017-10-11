@@ -60,20 +60,17 @@ class Library_Book_Search_Admin {
 	 * @since    1.0.0
 	 */
 	public function lbs_enqueue_styles() {
+		$load_styles = false;
+		if( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'book' ) {
+			$load_styles = true;
+		} elseif( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'book' ) {
+			$load_styles = true;
+		}
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Library_Book_Search_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Library_Book_Search_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/library-book-search-admin.css', array(), $this->version, 'all' );
+		if( $load_styles ) {
+			wp_enqueue_style( $this->plugin_name.'-font-awesome', LBS_PLUGIN_URL . 'admin/css/font-awesome.min.css' );
+			wp_enqueue_style( $this->plugin_name, LBS_PLUGIN_URL . 'admin/css/library-book-search-admin.css' );
+		}
 
 	}
 
@@ -83,20 +80,16 @@ class Library_Book_Search_Admin {
 	 * @since    1.0.0
 	 */
 	public function lbs_enqueue_scripts() {
+		$load_scripts = false;
+		if( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'book' ) {
+			$load_scripts = true;
+		} elseif( isset( $_GET['post'] ) && get_post_type( $_GET['post'] ) == 'book' ) {
+			$load_scripts = true;
+		}
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Library_Book_Search_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Library_Book_Search_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/library-book-search-admin.js', array( 'jquery' ), $this->version, false );
+		if( $load_scripts ) {
+			wp_enqueue_script( $this->plugin_name, LBS_PLUGIN_URL . 'admin/js/library-book-search-admin.js', array( 'jquery' ) );
+		}
 
 	}
 
@@ -190,5 +183,114 @@ class Library_Book_Search_Admin {
 			'rewrite'			=> array( 'slug' => 'book-publisher' ),
 		);
 		register_taxonomy( 'book-publisher', array( 'book' ), $p_args );
+	}
+
+	/**
+	 * Add meta box to books cpt
+	 */
+	public function lbs_books_metabox() {
+		//Price metabox
+		add_meta_box( 'lbs-price-metabox', __( 'Price', LBS_TEXT_DOMAIN ), array( $this, 'lbs_price_metabox_content' ), 'book', 'side', 'high', null );
+		//Rating metabox
+		add_meta_box( 'lbs-rating-metabox', __( 'Rating', LBS_TEXT_DOMAIN ), array( $this, 'lbs_rating_metabox_content' ), 'book', 'side', 'high', null );
+	}
+
+	/**
+	 * Price metabox - show content
+	 */
+	public function lbs_price_metabox_content() {
+		global $post;
+		$price = get_post_meta( $post->ID, 'book-price', true );
+		if( ! $price ) {
+			$price = 500;
+		}
+		?>
+		<input type="hidden" value="<?php echo $price;?>" id="hidden-book-price" name="lbs-price" />
+		<button type="button" class="button button-secondary lbs-price-dec">-</button>
+		<input value="<?php echo $price;?>" id="lbs-price-range" type="range" min="1" max="10000">
+		<button type="button" class="button button-secondary lbs-price-inc">+</button>
+		<p id="lbs-price-display"><?php echo "&#8377 $price";?></p>
+		<?php
+	}
+
+	/**
+	 * Rating metabox - show content
+	 */
+	public function lbs_rating_metabox_content() {
+		global $post;
+		$rating = get_post_meta( $post->ID, 'book-rating', true );
+		if( ! $rating ) {
+			$rating = 0;
+		}
+		?>
+		<div class="rating-stars text-center">
+			<ul id="stars">
+				<?php for( $i = 1; $i <= 5; $i++ ) {?>
+					<?php
+					$rating_class = '';
+					if( $i <= $rating ) {
+						$rating_class = 'selected';
+					}
+					?>
+					<li class="star <?php echo $rating_class;?>" data-value="<?php echo $i;?>">
+						<i class="fa fa-star"></i>
+					</li>
+				<?php }?>
+			</ul>
+			<input type="hidden" value="<?php echo $rating;?>" id="hidden-book-rating" name="lbs-rating" />
+		</div>
+		<?php
+	}
+
+	/**
+	 * Actions performed to save the meta fields in books
+	 */
+	public function lbs_update_books_meta_fields( $postid ) {
+		if( get_post_type( $postid ) == 'book' ) {
+			$price = sanitize_text_field( $_POST['lbs-price'] );
+			update_post_meta( $postid, 'book-price', $price );
+
+			$rating = sanitize_text_field( $_POST['lbs-rating'] );
+			update_post_meta( $postid, 'book-rating', $rating );
+		}
+	}
+
+	/**
+	 * Actions performed to add new column headings in the books list
+	 */
+	public function lbs_new_column_heading( $defaults ) {
+		$defaults['price']		=	__( 'Price', LBS_TEXT_DOMAIN );
+		$defaults['rating']		=	__( 'Rating', LBS_TEXT_DOMAIN );
+		return $defaults;
+	}
+
+	/**
+	 * Actions performed to add new column content in the books list
+	 */
+	public function lbs_new_column_content( $column_name, $postid ) {
+		$book_meta = get_post_meta( $postid );
+		//Show the Book Price
+		if ( $column_name == 'price' ) {
+			echo '&#8377 '.$book_meta['book-price'][0];
+		}
+
+		//Show Book Rating
+		if ( $column_name == 'rating' ) {
+			?>
+			<div class="rating-stars">
+				<ul>
+					<?php for( $i = 1; $i <= 5; $i++ ) {?>
+						<?php
+						$rating_class = '';
+						if( $i <= $book_meta['book-rating'][0] ) {
+							$rating_class = 'selected';
+						}
+						?>
+						<li class="star <?php echo $rating_class;?>"><i class="fa fa-star"></i></li>
+					<?php }?>
+				</ul>
+			</div>
+			<?php
+		}
 	}
 }

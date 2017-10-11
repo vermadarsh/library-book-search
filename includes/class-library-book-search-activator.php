@@ -30,7 +30,15 @@ class Library_Book_Search_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-
+		$pg_title = "Book Search";
+		if( get_page_by_title( $pg_title ) == NULL ) {
+			wp_insert_post( array(
+				'post_type' => 'page',
+				'post_status' => 'publish',
+				'post_title' => $pg_title,
+				'post_content' => '[library_book_search]'
+			) );
+		}
 	}
 
 }

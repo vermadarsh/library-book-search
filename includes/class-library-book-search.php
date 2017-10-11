@@ -158,7 +158,10 @@ class Library_Book_Search {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'lbs_enqueue_scripts' );
 		$this->loader->add_action( 'init', $plugin_admin, 'lbs_register_books_cpt' );
 		$this->loader->add_action( 'init', $plugin_admin, 'lbs_register_books_cpt_taxonomies' );
-		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'lbs_places_metabox' );
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'lbs_books_metabox' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'lbs_update_books_meta_fields' );
+		$this->loader->add_filter( 'manage_book_posts_columns', $plugin_admin, 'lbs_new_column_heading', 10 );
+		$this->loader->add_action( 'manage_book_posts_custom_column', $plugin_admin, 'lbs_new_column_content', 10, 2 );
 
 	}
 
@@ -173,8 +176,8 @@ class Library_Book_Search {
 
 		$plugin_public = new Library_Book_Search_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'lbs_enqueue_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'lbs_enqueue_scripts' );
 
 	}
 
