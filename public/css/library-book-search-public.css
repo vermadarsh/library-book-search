@@ -2,3 +2,23 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+.lbs-book-meta-details-tbl, .lbs-book-meta-details-tbl th, .lbs-book-meta-details-tbl td{
+	border: none;
+}
+
+.lbs-book-meta-details-tbl th, .lbs-book-meta-details-tbl td{
+	border-bottom: 1px solid #CCC;
+}
+.rating-stars ul {
+	list-style-type: none;
+	padding: 0;
+	margin-left: 0;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.rating-stars ul > li.star {
+	display: inline-block;
+}
+.rating-stars ul > li.star.selected > i.fa {
+	color: #FF912C;
+}
