@@ -130,6 +130,12 @@ class Library_Book_Search_Admin {
 			'supports'				=>	array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' )
 		);
 		register_post_type( 'book', $args );
+
+		$set = get_option( 'cpt_book_flushed_rewrite_rules' );
+		if ( $set !== 'yes' ){
+			flush_rewrite_rules( false );
+			update_option( 'cpt_book_flushed_rewrite_rules', 'yes' );
+		}
 	}
 
 	/**
@@ -207,9 +213,9 @@ class Library_Book_Search_Admin {
 		?>
 		<input type="hidden" value="<?php echo $price;?>" id="hidden-book-price" name="lbs-price" />
 		<button type="button" class="button button-secondary lbs-price-dec">-</button>
-		<input value="<?php echo $price;?>" id="lbs-price-range" type="range" min="1" max="10000">
+		<input value="<?php echo $price;?>" id="lbs-price-range" type="range" min="1" max="3000">
 		<button type="button" class="button button-secondary lbs-price-inc">+</button>
-		<p id="lbs-price-display"><?php echo "&#8377 $price";?></p>
+		<p id="lbs-price-display"><?php echo "&#36 $price";?></p>
 		<?php
 	}
 
@@ -271,7 +277,7 @@ class Library_Book_Search_Admin {
 		$book_meta = get_post_meta( $postid );
 		//Show the Book Price
 		if ( $column_name == 'price' ) {
-			echo '&#8377 '.$book_meta['book-price'][0];
+			echo '&#36 '.$book_meta['book-price'][0];
 		}
 
 		//Show Book Rating
@@ -292,5 +298,34 @@ class Library_Book_Search_Admin {
 			</div>
 			<?php
 		}
+	}
+
+	/**
+	 * Register a submenu page to handle shortcode
+	 *
+	 * @since    1.0.0
+	 */
+	public function lbs_add_submenu_page() {
+		add_submenu_page( 'edit.php?post_type=book', __( 'Book Search Shortcode Settings', LBS_TEXT_DOMAIN ), __( 'Shortcode', LBS_TEXT_DOMAIN ), 'manage_options', 'book-search-shortcode', array( $this, 'lbs_admin_page' ) );
+	}
+
+	/**
+	 * Actions performed to show the contant of the submenu added
+	 */
+	public function lbs_admin_page() {
+		?>
+		<div class="wrap">
+			<h2><?php _e( 'Book Search Shortcode', LBS_TEXT_DOMAIN );?></h2>
+			<table class="form-table">
+				<tr scope="row">
+					<th>[library_book_search]</th>
+					<td>
+						<?php _e( 'This shortcode will render the book search template, which will help the user to search the books on different criterias.', LBS_TEXT_DOMAIN );?>
+						<p class="description"><?php _e( 'The shortcode required in this plugin.', LBS_TEXT_DOMAIN );?></p>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<?php
 	}
 }

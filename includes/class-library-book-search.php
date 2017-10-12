@@ -160,6 +160,7 @@ class Library_Book_Search {
 		$this->loader->add_action( 'init', $plugin_admin, 'lbs_register_books_cpt_taxonomies' );
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'lbs_books_metabox' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'lbs_update_books_meta_fields' );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'lbs_add_submenu_page' );
 		$this->loader->add_filter( 'manage_book_posts_columns', $plugin_admin, 'lbs_new_column_heading', 10 );
 		$this->loader->add_action( 'manage_book_posts_custom_column', $plugin_admin, 'lbs_new_column_content', 10, 2 );
 
@@ -180,6 +181,8 @@ class Library_Book_Search {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'lbs_enqueue_scripts' );
 		$this->loader->add_filter( 'single_template', $plugin_public, 'lbs_book_detail_page_template', 7 );
 		$this->loader->add_shortcode( 'library_book_search', $plugin_public, 'lbs_book_search_shortcode_template' );
+		$this->loader->add_action( 'wp_ajax_lbs_search_books', $plugin_public, 'lbs_search_books' );
+		$this->loader->add_action( 'wp_ajax_nopriv_lbs_search_books', $plugin_public, 'lbs_search_books' );
 
 	}
 

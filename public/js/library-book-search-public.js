@@ -1,32 +1,66 @@
-(function( $ ) {
+jQuery(document).ready(function( $ ) {
 	'use strict';
+	$('.lbs-results-list').DataTable({
+		"sDom": '<"top"l>rt<"bottom"ip><"clear">'
+	});
 
-	/**
-	 * All of the code for your public-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
+	$( "#lbs-price" ).slider({
+		range: true,
+		min: 1,
+		max: 3000,
+		values: [ 1500, 2500 ],
+		slide: function( event, ui ) {
+			$( "#lbs-min-price" ).val( ui.values[0] );
+			$( "#lbs-max-price" ).val( ui.values[1] );
+			$( '#lbs-price-display' ).html( '('+ ui.values[0] +' - '+ ui.values[1] +')' );
+		}
+	});
 
-})( jQuery );
+	$('#lbs-publisher').selectize({
+		placeholder		: "Publisher",
+		plugins			: ['remove_button'],
+	});
+
+	$('#lbs-rating').selectize({
+		placeholder		: "Rating",
+		plugins			: ['remove_button'],
+	});
+
+	//Search the books
+	$(document).on('click', '#lbs-search-books', function(){
+		var btn = $(this);
+		var btn_txt = btn.html();
+
+		var book_name = $('#lbs-book-name').val();
+		var author = $('#lbs-author').val();
+		var publisher = $('#lbs-publisher').val();
+		var rating = $('#lbs-rating').val();
+		var min_price = $('#lbs-min-price').val();
+		var max_price = $('#lbs-max-price').val();
+		btn.html( '<i class="fa fa-refresh fa-spin"></i>  Searching...' );
+
+		var data = {
+			'action'		: 'lbs_search_books',
+			'book_name'		: book_name,
+			'author'		: author,
+			'publisher'		: publisher,
+			'rating'		: rating,
+			'min_price'		: min_price,
+			'max_price'		: max_price
+		}
+		$.ajax({
+			dataType: "JSON",
+			url: lbs_public_js_obj.ajaxurl,
+			type: 'POST',
+			data: data,
+			success: function( response ) {
+				console.log( response['data']['message'] );
+				$('.lbs-results').html( response['data']['html'] );
+				btn.html( btn_txt );
+				$('.lbs-results-list').DataTable({
+					"sDom": '<"top"l>rt<"bottom"ip><"clear">'
+				});
+			},
+		});
+	});
+});

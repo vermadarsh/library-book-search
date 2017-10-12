@@ -22,3 +22,38 @@
 .rating-stars ul > li.star.selected > i.fa {
 	color: #FF912C;
 }
+.lbs-error {
+	background-color: #FF8166;
+	border: 1px solid #FF2D00;
+	border-radius: 5px;
+	width: 100%;
+}
+.lbs-error p{
+	margin: 10px 0 10px 10px;
+}
+.lbs-results-list thead tr th:first-child,
+.lbs-results-list tbody tr td:first-child {
+	width: 35px;
+	min-width: 35px;
+	max-width: 35px;
+	word-break: break-all;
+}
+.lbs-col{
+	width: 49%;
+}
+.lbs-book-name{
+	float: left;
+}
+.lbs-author{
+	float: right;
+}
+.lbs-row{
+	margin-top: 5%;
+}
+.lbs-row-4{
+	width: 100%;
+	margin: 5% 0 8% 0;
+}
+.lbs-search{
+	text-align: center;
+}

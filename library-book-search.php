@@ -102,8 +102,7 @@ function lbs_plugin_init() {
  */
 function lbs_plugin_links( $links ) {
 	$lbs_links = array(
-		'<a href="'.admin_url('admin.php?page=bp-checkins').'">'.__( 'Settings', LBS_TEXT_DOMAIN ).'</a>',
-		'<a href="https://www.facebook.com/vermadarsh" target="_blank">'.__( 'Support', LBS_TEXT_DOMAIN ).'</a>'
+		'<a href="'.admin_url('edit.php?post_type=book&page=book-search-shortcode').'">'.__( 'Shortcode', LBS_TEXT_DOMAIN ).'</a>'
 	);
 	return array_merge( $links, $lbs_links );
 }
