@@ -41,10 +41,10 @@
 .lbs-col{
 	width: 49%;
 }
-.lbs-book-name{
+.lbs-book-name, .lbs-book-publisher{
 	float: left;
 }
-.lbs-author{
+.lbs-author, .lbs-rating{
 	float: right;
 }
 .lbs-row{
