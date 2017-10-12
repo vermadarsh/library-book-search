@@ -60,12 +60,23 @@ class Library_Book_Search_Public {
 	 * @since    1.0.0
 	 */
 	public function lbs_enqueue_styles() {
+		$load_styles = false;
+		global $post;
+		if( is_single() && get_post_type( $post->ID ) == 'book' ) {
+			$load_styles = true;
+		}
 
-		wp_enqueue_style( $this->plugin_name.'-selectize', LBS_PLUGIN_URL . 'public/css/selectize.css' );
-		wp_enqueue_style( $this->plugin_name.'-ui', LBS_PLUGIN_URL . 'public/css/jquery-ui.min.css' );
-		wp_enqueue_style( $this->plugin_name.'-data-tables', LBS_PLUGIN_URL . 'public/css/jquery.dataTables.min.css' );
-		wp_enqueue_style( $this->plugin_name.'-font-awesome', LBS_PLUGIN_URL . 'admin/css/font-awesome.min.css' );
-		wp_enqueue_style( $this->plugin_name, LBS_PLUGIN_URL . 'public/css/library-book-search-public.css' );
+		if( isset( $post ) && has_shortcode( $post->post_content, 'library_book_search' ) ) {
+			$load_styles = true;
+		}
+
+		if( $load_styles ) {
+			wp_enqueue_style( $this->plugin_name.'-selectize', LBS_PLUGIN_URL . 'public/css/selectize.css' );
+			wp_enqueue_style( $this->plugin_name.'-ui', LBS_PLUGIN_URL . 'public/css/jquery-ui.min.css' );
+			wp_enqueue_style( $this->plugin_name.'-data-tables', LBS_PLUGIN_URL . 'public/css/jquery.dataTables.min.css' );
+			wp_enqueue_style( $this->plugin_name.'-font-awesome', LBS_PLUGIN_URL . 'admin/css/font-awesome.min.css' );
+			wp_enqueue_style( $this->plugin_name, LBS_PLUGIN_URL . 'public/css/library-book-search-public.css' );
+		}
 
 	}
 
@@ -75,19 +86,30 @@ class Library_Book_Search_Public {
 	 * @since    1.0.0
 	 */
 	public function lbs_enqueue_scripts() {
+		$load_scripts = false;
+		global $post;
+		if( is_single() && get_post_type( $post->ID ) == 'book' ) {
+			$load_scripts = true;
+		}
 
-		wp_enqueue_script( $this->plugin_name.'-selectize', LBS_PLUGIN_URL . 'public/js/selectize.min.js', array( 'jquery' ) );
-		wp_enqueue_script( $this->plugin_name.'-ui', LBS_PLUGIN_URL . 'public/js/jquery-ui.min.js', array( 'jquery' ) );
-		wp_enqueue_script( $this->plugin_name.'-data-tables', LBS_PLUGIN_URL . 'public/js/jquery.dataTables.min.js', array( 'jquery' ) );
-		wp_enqueue_script( $this->plugin_name, LBS_PLUGIN_URL . 'public/js/library-book-search-public.js', array( 'jquery' ) );
+		if( isset( $post ) && has_shortcode( $post->post_content, 'library_book_search' ) ) {
+			$load_scripts = true;
+		}
 
-		wp_localize_script(
-			$this->plugin_name,
-			'lbs_public_js_obj',
-			array(
-				'ajaxurl'		=>	admin_url( 'admin-ajax.php' )
-			)
-		);
+		if( $load_scripts ) {
+			wp_enqueue_script( $this->plugin_name.'-selectize', LBS_PLUGIN_URL . 'public/js/selectize.min.js', array( 'jquery' ) );
+			wp_enqueue_script( $this->plugin_name.'-ui', LBS_PLUGIN_URL . 'public/js/jquery-ui.min.js', array( 'jquery' ) );
+			wp_enqueue_script( $this->plugin_name.'-data-tables', LBS_PLUGIN_URL . 'public/js/jquery.dataTables.min.js', array( 'jquery' ) );
+			wp_enqueue_script( $this->plugin_name, LBS_PLUGIN_URL . 'public/js/library-book-search-public.js', array( 'jquery' ) );
+
+			wp_localize_script(
+				$this->plugin_name,
+				'lbs_public_js_obj',
+				array(
+					'ajaxurl'		=>	admin_url( 'admin-ajax.php' )
+				)
+			);
+		}
 
 	}
 
